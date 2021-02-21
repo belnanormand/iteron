@@ -1,4 +1,6 @@
 package iteron
 
-type Behaviour struct {
+//Behaviour Main interface for behaviours
+type Behaviour interface {
+	Apply(dt float64)
 }

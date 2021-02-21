@@ -29,18 +29,24 @@ func NewLayer(name string, order int, scene *Scene) *Layer {
 //AddSprite Adds a sprite to the layer. Composite sprites
 //can be added by adding the main sprite only
 func (l *Layer) AddSprite(sprite *Sprite) {
+	sprite.layer = l
 	l.sprites = append(l.sprites, sprite)
-	//TODO Set the sprites current active layer
 
 }
 
 //Update updates the layer trees
 // dt: delta time
 func (l *Layer) Update(dt float64) {
-	//TODO: Add sprite update functins
+
+	for _, sprite := range l.sprites {
+		sprite.Update(dt)
+	}
 }
 
 //Draw draws the layer tree
 func (l *Layer) Draw() {
-	//TODO: Add sprite draw function
+	//TODO: Add sprite draw functions
+	for _, sprite := range l.sprites {
+		sprite.Draw()
+	}
 }

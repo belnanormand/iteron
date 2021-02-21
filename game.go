@@ -63,3 +63,8 @@ func (g *Game) LoadImageResource(path string, name string) {
 	}
 	g.imageResources[name] = &resource
 }
+
+//GetImageResource Retrieves a loaded image resource
+func (g *Game) GetImageResource(name string) *pixel.Picture {
+	return g.imageResources[name]
+}

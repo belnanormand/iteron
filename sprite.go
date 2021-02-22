@@ -13,7 +13,8 @@ type Sprite struct {
 	spriteSheet *pixel.Picture
 	size        Size
 	position    Position
-	frames      []pixel.Rect
+	Frames      []pixel.Rect
+	//TODO: Add Velocity to the sprite itslf instead of the behaviours
 }
 
 //NewSprite Creates a new sprite and generate frames form the image top left to the bottom right
@@ -24,13 +25,13 @@ func NewSprite(spritesheet *pixel.Picture, size Size) *Sprite {
 		size:        size,
 	}
 
-	sprite.frames = make([]pixel.Rect, 0, 10)
+	sprite.Frames = make([]pixel.Rect, 0, 10)
 	sprite.behaviours = make([]interface{ Behaviour }, 0, 10)
 
 	data := pixel.PictureDataFromPicture(*sprite.spriteSheet)
 	for y := 0.0; y+sprite.size.Height <= data.Bounds().Max.Y; y += sprite.size.Height {
 		for x := 0.0; x+sprite.size.Width <= data.Bounds().Max.X; x += sprite.size.Width {
-			sprite.frames = append(sprite.frames, pixel.R(
+			sprite.Frames = append(sprite.Frames, pixel.R(
 				x,
 				y,
 				x+sprite.size.Width,
@@ -48,13 +49,14 @@ func NewSprite(spritesheet *pixel.Picture, size Size) *Sprite {
 func (sprite *Sprite) Update(dt float64) {
 	if sprite.pSprite == nil {
 		sprite.pSprite = pixel.NewSprite(nil, pixel.Rect{})
+		sprite.pSprite.Set(*sprite.spriteSheet, sprite.Frames[0])
 	}
-
-	sprite.pSprite.Set(*sprite.spriteSheet, sprite.frames[0])
 
 	for _, behaviour := range sprite.behaviours {
 		behaviour.Apply(dt)
 	}
+
+	//TODO: Then apply velocity to position here.
 
 }
 

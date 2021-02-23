@@ -12,6 +12,19 @@ type Behaviour interface {
 	Apply(dt float64)
 }
 
+//BehaviourCustom Allows us to crate custom behaviours
+type BehaviourCustom struct {
+	Behaviour
+	Sprite  *Sprite
+	Enabled bool
+	Update  func(b *BehaviourCustom, dt float64)
+}
+
+//Apply calls the attached Update function
+func (b *BehaviourCustom) Apply(dt float64) {
+	b.Update(b, dt)
+}
+
 //Behaviour8Direction Movement behaviour with default WASD
 type Behaviour8Direction struct {
 	Behaviour
@@ -148,4 +161,40 @@ func (b *BehaviourAnimation) Apply(dt float64) {
 		}
 
 	}
+}
+
+//BehaviourAnchor Anchors one sprite to another
+type BehaviourAnchor struct {
+	Behaviour
+	Sprite       *Sprite
+	Enabled      bool
+	ParentSprite *Sprite
+	AnchorName   string
+}
+
+//Apply Anchors a sprite to another
+func (b *BehaviourAnchor) Apply(dt float64) {
+	b.Sprite.position.X = b.ParentSprite.position.X + b.ParentSprite.AnchorPoints[b.AnchorName].X
+	b.Sprite.position.Y = b.ParentSprite.position.Y + b.ParentSprite.AnchorPoints[b.AnchorName].Y
+}
+
+//BehaviourBullet Moves sprite in a set direction
+type BehaviourBullet struct {
+	Behaviour
+	Speed     float64
+	Sprite    *Sprite
+	Enabled   bool
+	Velocity  *pixel.Vec
+	Direction int //(0 - 360) (360 - 720)
+}
+
+//Apply Moves sprite in a set direction
+func (b *BehaviourBullet) Apply(dt float64) {
+
+	b.Velocity.Y = b.Speed * math.Cos(DegreesToRadians(b.Direction))
+	b.Velocity.X = b.Speed * math.Sin(DegreesToRadians(b.Direction))
+
+	b.Sprite.position.Y += b.Velocity.Y * dt
+	b.Sprite.position.X += b.Velocity.X * dt
+
 }

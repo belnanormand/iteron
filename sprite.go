@@ -6,14 +6,14 @@ import (
 
 //Sprite Stuff that is going to be drawn on screen
 type Sprite struct {
-	pSprite     *pixel.Sprite
-	behaviours  []interface{ Behaviour }
-	sprites     []*Sprite
-	layer       *Layer
-	spriteSheet *pixel.Picture
-	size        Size
-	position    Position
-	Frames      []pixel.Rect
+	pSprite      *pixel.Sprite
+	Behaviours   map[string]interface{ Behaviour }
+	layer        *Layer
+	spriteSheet  *pixel.Picture
+	size         Size
+	position     Position
+	Frames       []pixel.Rect
+	AnchorPoints map[string]Position
 	//TODO: Add Velocity to the sprite itslf instead of the behaviours
 }
 
@@ -25,8 +25,10 @@ func NewSprite(spritesheet *pixel.Picture, size Size) *Sprite {
 		size:        size,
 	}
 
+	sprite.SetPosition(0, 0)
 	sprite.Frames = make([]pixel.Rect, 0, 10)
-	sprite.behaviours = make([]interface{ Behaviour }, 0, 10)
+	sprite.Behaviours = make(map[string]interface{ Behaviour })
+	sprite.AnchorPoints = make(map[string]Position)
 
 	data := pixel.PictureDataFromPicture(*sprite.spriteSheet)
 	for y := 0.0; y+sprite.size.Height <= data.Bounds().Max.Y; y += sprite.size.Height {
@@ -52,7 +54,7 @@ func (sprite *Sprite) Update(dt float64) {
 		sprite.pSprite.Set(*sprite.spriteSheet, sprite.Frames[0])
 	}
 
-	for _, behaviour := range sprite.behaviours {
+	for _, behaviour := range sprite.Behaviours {
 		behaviour.Apply(dt)
 	}
 
@@ -72,6 +74,6 @@ func (sprite *Sprite) SetPosition(X float64, Y float64) {
 }
 
 //AddBehaviour Attach behaviours to the sprite
-func (sprite *Sprite) AddBehaviour(b interface{ Behaviour }) {
-	sprite.behaviours = append(sprite.behaviours, b)
+func (sprite *Sprite) AddBehaviour(name string, b interface{ Behaviour }) {
+	sprite.Behaviours[name] = b
 }

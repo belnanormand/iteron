@@ -2,6 +2,7 @@ package iteron
 
 import (
 	"image"
+	"math"
 	"os"
 
 	_ "image/png" //We need this to decode PNG's
@@ -23,6 +24,11 @@ func loadPicture(path string) (pixel.Picture, error) {
 
 	return pixel.PictureDataFromImage(img), nil
 
+}
+
+//DegreesToRadians Converts degrees to radians
+func DegreesToRadians(degrees int) float64 {
+	return (float64(degrees) / 360) * 2 * math.Pi
 }
 
 //Size General size struct

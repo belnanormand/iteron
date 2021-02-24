@@ -6,14 +6,15 @@ import (
 
 //Sprite Stuff that is going to be drawn on screen
 type Sprite struct {
-	pSprite      *pixel.Sprite
+	PSprite      *pixel.Sprite
 	Behaviours   map[string]interface{ Behaviour }
-	layer        *Layer
-	spriteSheet  *pixel.Picture
-	size         Size
-	position     Position
+	Layer        *Layer
+	SpriteSheet  *pixel.Picture
+	Size         Size
+	Position     Position
 	Frames       []pixel.Rect
 	AnchorPoints map[string]Position
+	Rotation     float64
 	//TODO: Add Velocity to the sprite itslf instead of the behaviours
 }
 
@@ -21,8 +22,8 @@ type Sprite struct {
 //
 func NewSprite(spritesheet *pixel.Picture, size Size) *Sprite {
 	sprite := Sprite{
-		spriteSheet: spritesheet,
-		size:        size,
+		SpriteSheet: spritesheet,
+		Size:        size,
 	}
 
 	sprite.SetPosition(0, 0)
@@ -30,14 +31,14 @@ func NewSprite(spritesheet *pixel.Picture, size Size) *Sprite {
 	sprite.Behaviours = make(map[string]interface{ Behaviour })
 	sprite.AnchorPoints = make(map[string]Position)
 
-	data := pixel.PictureDataFromPicture(*sprite.spriteSheet)
-	for y := 0.0; y+sprite.size.Height <= data.Bounds().Max.Y; y += sprite.size.Height {
-		for x := 0.0; x+sprite.size.Width <= data.Bounds().Max.X; x += sprite.size.Width {
+	data := pixel.PictureDataFromPicture(*sprite.SpriteSheet)
+	for y := 0.0; y+sprite.Size.Height <= data.Bounds().Max.Y; y += sprite.Size.Height {
+		for x := 0.0; x+sprite.Size.Width <= data.Bounds().Max.X; x += sprite.Size.Width {
 			sprite.Frames = append(sprite.Frames, pixel.R(
 				x,
 				y,
-				x+sprite.size.Width,
-				y+sprite.size.Height,
+				x+sprite.Size.Width,
+				y+sprite.Size.Height,
 			))
 		}
 	}
@@ -49,9 +50,9 @@ func NewSprite(spritesheet *pixel.Picture, size Size) *Sprite {
 //Update This is where we update the sprite and apply any behaviours attached to the sprite
 // dt: delta time
 func (sprite *Sprite) Update(dt float64) {
-	if sprite.pSprite == nil {
-		sprite.pSprite = pixel.NewSprite(nil, pixel.Rect{})
-		sprite.pSprite.Set(*sprite.spriteSheet, sprite.Frames[0])
+	if sprite.PSprite == nil {
+		sprite.PSprite = pixel.NewSprite(nil, pixel.Rect{})
+		sprite.PSprite.Set(*sprite.SpriteSheet, sprite.Frames[0])
 	}
 
 	for _, behaviour := range sprite.Behaviours {
@@ -64,13 +65,24 @@ func (sprite *Sprite) Update(dt float64) {
 
 //Draw We draw the sprite
 func (sprite *Sprite) Draw() {
-	sprite.pSprite.Draw(sprite.layer.scene.game.window,
-		pixel.IM.Moved(pixel.V(sprite.position.X, sprite.position.Y)))
+
+	mat := pixel.IM
+
+	mat = mat.Moved(pixel.V(sprite.Position.X, sprite.Position.Y))
+
+	bm, ok := sprite.Behaviours["anchor"].(*BehaviourAnchor)
+	if ok {
+		mat = mat.Rotated(pixel.V(bm.ParentSprite.Position.X, bm.ParentSprite.Position.Y), -DegreesToRadians(bm.ParentSprite.Rotation))
+	}
+
+	mat = mat.Rotated(pixel.V(sprite.Position.X, sprite.Position.Y), -DegreesToRadians(sprite.Rotation))
+
+	sprite.PSprite.Draw(sprite.Layer.Scene.Game.Window, mat)
 }
 
 //SetPosition Sets the position of the sprite
 func (sprite *Sprite) SetPosition(X float64, Y float64) {
-	sprite.position = Position{X: X, Y: Y}
+	sprite.Position = Position{X: X, Y: Y}
 }
 
 //AddBehaviour Attach behaviours to the sprite

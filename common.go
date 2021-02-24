@@ -27,8 +27,8 @@ func loadPicture(path string) (pixel.Picture, error) {
 }
 
 //DegreesToRadians Converts degrees to radians
-func DegreesToRadians(degrees int) float64 {
-	return (float64(degrees) / 360) * 2 * math.Pi
+func DegreesToRadians(degrees float64) float64 {
+	return (degrees / 360) * 2 * math.Pi
 }
 
 //Size General size struct

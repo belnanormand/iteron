@@ -43,7 +43,7 @@ func (b *Behaviour8Direction) Apply(dt float64) {
 		return
 	}
 
-	w := b.Sprite.layer.scene.game.window
+	w := b.Sprite.Layer.Scene.Game.Window
 
 	if w.Pressed(pixelgl.KeyW) || w.Pressed(pixelgl.KeyS) {
 		if w.Pressed(pixelgl.KeyW) {
@@ -95,8 +95,8 @@ func (b *Behaviour8Direction) Apply(dt float64) {
 		b.Velocity.X = (b.Velocity.X / math.Abs((b.Velocity.X))) * b.MaxSpeed
 	}
 
-	b.Sprite.position.Y += b.Velocity.Y * dt
-	b.Sprite.position.X += b.Velocity.X * dt
+	b.Sprite.Position.Y += b.Velocity.Y * dt
+	b.Sprite.Position.X += b.Velocity.X * dt
 
 }
 
@@ -110,22 +110,22 @@ type BehaviourBoundToLayout struct {
 
 //Apply Keeps stuff from running offscreen
 func (b *BehaviourBoundToLayout) Apply(dt float64) {
-	w := b.Sprite.layer.scene.game.window
+	w := b.Sprite.Layer.Scene.Game.Window
 
-	if b.Sprite.position.Y > (w.Bounds().H() - b.Margin) {
-		b.Sprite.position.Y = (w.Bounds().H() - b.Margin)
+	if b.Sprite.Position.Y > (w.Bounds().H() - b.Margin) {
+		b.Sprite.Position.Y = (w.Bounds().H() - b.Margin)
 	}
 
-	if b.Sprite.position.X > (w.Bounds().W() - b.Margin) {
-		b.Sprite.position.X = (w.Bounds().W() - b.Margin)
+	if b.Sprite.Position.X > (w.Bounds().W() - b.Margin) {
+		b.Sprite.Position.X = (w.Bounds().W() - b.Margin)
 	}
 
-	if b.Sprite.position.Y < b.Margin {
-		b.Sprite.position.Y = b.Margin
+	if b.Sprite.Position.Y < b.Margin {
+		b.Sprite.Position.Y = b.Margin
 	}
 
-	if b.Sprite.position.X < b.Margin {
-		b.Sprite.position.X = b.Margin
+	if b.Sprite.Position.X < b.Margin {
+		b.Sprite.Position.X = b.Margin
 	}
 }
 
@@ -152,12 +152,12 @@ func (b *BehaviourAnimation) Apply(dt float64) {
 			if b.currentFrame > len(b.AnimationSet[b.CurrentAnimation])-1 {
 				b.currentFrame = 0
 			}
-			b.Sprite.pSprite.Set(*b.Sprite.spriteSheet, b.AnimationSet[b.CurrentAnimation][b.currentFrame])
+			b.Sprite.PSprite.Set(*b.Sprite.SpriteSheet, b.AnimationSet[b.CurrentAnimation][b.currentFrame])
 		} else {
 			if b.currentFrame >= len(b.Sprite.Frames) {
 				b.currentFrame = 0
 			}
-			b.Sprite.pSprite.Set(*b.Sprite.spriteSheet, b.Sprite.Frames[b.currentFrame])
+			b.Sprite.PSprite.Set(*b.Sprite.SpriteSheet, b.Sprite.Frames[b.currentFrame])
 		}
 
 	}
@@ -174,8 +174,8 @@ type BehaviourAnchor struct {
 
 //Apply Anchors a sprite to another
 func (b *BehaviourAnchor) Apply(dt float64) {
-	b.Sprite.position.X = b.ParentSprite.position.X + b.ParentSprite.AnchorPoints[b.AnchorName].X
-	b.Sprite.position.Y = b.ParentSprite.position.Y + b.ParentSprite.AnchorPoints[b.AnchorName].Y
+	b.Sprite.Position.X = b.ParentSprite.Position.X + b.ParentSprite.AnchorPoints[b.AnchorName].X
+	b.Sprite.Position.Y = b.ParentSprite.Position.Y + b.ParentSprite.AnchorPoints[b.AnchorName].Y
 }
 
 //BehaviourBullet Moves sprite in a set direction
@@ -185,7 +185,7 @@ type BehaviourBullet struct {
 	Sprite    *Sprite
 	Enabled   bool
 	Velocity  *pixel.Vec
-	Direction int //(0 - 360) (360 - 720)
+	Direction float64 //(0 - 360) (360 - 720)
 }
 
 //Apply Moves sprite in a set direction
@@ -194,7 +194,7 @@ func (b *BehaviourBullet) Apply(dt float64) {
 	b.Velocity.Y = b.Speed * math.Cos(DegreesToRadians(b.Direction))
 	b.Velocity.X = b.Speed * math.Sin(DegreesToRadians(b.Direction))
 
-	b.Sprite.position.Y += b.Velocity.Y * dt
-	b.Sprite.position.X += b.Velocity.X * dt
+	b.Sprite.Position.Y += b.Velocity.Y * dt
+	b.Sprite.Position.X += b.Velocity.X * dt
 
 }

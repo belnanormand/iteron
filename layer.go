@@ -5,7 +5,7 @@ type Layer struct {
 	Name    string
 	Order   int
 	sprites []*Sprite
-	scene   *Scene
+	Scene   *Scene
 }
 
 //NewLayer Creates a new layer, adds it the the scene object and returns
@@ -18,18 +18,18 @@ func NewLayer(name string, order int, scene *Scene) *Layer {
 	l := Layer{
 		Name:    name,
 		Order:   order,
-		scene:   scene,
+		Scene:   scene,
 		sprites: make([]*Sprite, 0, 10), //TODO: make capasity customizable
 	}
 
-	l.scene.layers[name] = &l
+	l.Scene.layers[name] = &l
 	return &l
 }
 
 //AddSprite Adds a sprite to the layer. Composite sprites
 //can be added by adding the main sprite only
 func (l *Layer) AddSprite(sprite *Sprite) {
-	sprite.layer = l
+	sprite.Layer = l
 	l.sprites = append(l.sprites, sprite)
 
 }

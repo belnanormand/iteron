@@ -10,7 +10,7 @@ import (
 
 //Game The main game entry point
 type Game struct {
-	window         *pixelgl.Window
+	Window         *pixelgl.Window
 	scenes         map[string]*Scene
 	currentScene   *Scene
 	imageResources map[string]*pixel.Picture
@@ -20,7 +20,7 @@ type Game struct {
 // win: pixel windo that will be used for drawing
 func NewGame(win *pixelgl.Window) Game {
 	game := Game{
-		window:         win,
+		Window:         win,
 		scenes:         make(map[string]*Scene),
 		imageResources: make(map[string]*pixel.Picture),
 	}
@@ -31,7 +31,7 @@ func NewGame(win *pixelgl.Window) Game {
 func (g *Game) Update() {
 	last := time.Now()
 
-	for !g.window.Closed() {
+	for !g.Window.Closed() {
 
 		dt := time.Since(last).Seconds()
 		last = time.Now()
@@ -41,7 +41,7 @@ func (g *Game) Update() {
 			g.currentScene.Draw()
 		}
 
-		g.window.Update()
+		g.Window.Update()
 
 	}
 }

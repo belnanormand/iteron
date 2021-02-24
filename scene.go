@@ -5,7 +5,7 @@ import "image/color"
 //Scene a specific scene in the game
 type Scene struct {
 	Name            string
-	game            *Game
+	Game            *Game
 	BackgroundColor color.RGBA
 	layers          map[string]*Layer
 }
@@ -17,11 +17,11 @@ type Scene struct {
 func NewScene(name string, game *Game) *Scene {
 	s := Scene{
 		Name:   name,
-		game:   game,
+		Game:   game,
 		layers: make(map[string]*Layer),
 	}
 
-	s.game.scenes[name] = &s
+	s.Game.scenes[name] = &s
 	return &s
 }
 
@@ -40,7 +40,7 @@ func (s *Scene) Update(dt float64) {
 
 //Draw draws the scene tree
 func (s *Scene) Draw() {
-	s.game.window.Clear(s.BackgroundColor)
+	s.Game.Window.Clear(s.BackgroundColor)
 	for _, layer := range s.layers {
 		layer.Draw()
 	}

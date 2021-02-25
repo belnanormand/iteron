@@ -44,4 +44,5 @@ func (s *Scene) Draw() {
 	for _, layer := range s.layers {
 		layer.Draw()
 	}
+	
 }

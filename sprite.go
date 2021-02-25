@@ -8,6 +8,7 @@ import (
 type Sprite struct {
 	PSprite      *pixel.Sprite
 	Behaviours   map[string]interface{ Behaviour }
+	Groups       []string
 	Layer        *Layer
 	SpriteSheet  *pixel.Picture
 	Size         Size
@@ -30,6 +31,7 @@ func NewSprite(spritesheet *pixel.Picture, size Size) *Sprite {
 	sprite.Frames = make([]pixel.Rect, 0, 10)
 	sprite.Behaviours = make(map[string]interface{ Behaviour })
 	sprite.AnchorPoints = make(map[string]Position)
+	sprite.Groups = make([]string, 0, 2)
 
 	data := pixel.PictureDataFromPicture(*sprite.SpriteSheet)
 	for y := 0.0; y+sprite.Size.Height <= data.Bounds().Max.Y; y += sprite.Size.Height {
@@ -66,6 +68,10 @@ func (sprite *Sprite) Update(dt float64) {
 //Draw We draw the sprite
 func (sprite *Sprite) Draw() {
 
+	if sprite.PSprite == nil {
+		return
+	} //newly created sprite might not have had their initial update call. Skip if that is the case
+
 	mat := pixel.IM
 
 	mat = mat.Moved(pixel.V(sprite.Position.X, sprite.Position.Y))
@@ -88,4 +94,9 @@ func (sprite *Sprite) SetPosition(X float64, Y float64) {
 //AddBehaviour Attach behaviours to the sprite
 func (sprite *Sprite) AddBehaviour(name string, b interface{ Behaviour }) {
 	sprite.Behaviours[name] = b
+}
+
+//Destroy Completely removes the sprite from the game
+func (sprite *Sprite) Destroy() {
+	sprite.Layer.RemoveSprite(sprite)
 }

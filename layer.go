@@ -50,3 +50,24 @@ func (l *Layer) Draw() {
 		sprite.Draw()
 	}
 }
+
+//RemoveSprite a sprite from the layer
+func (l *Layer) RemoveSprite(element *Sprite) *Sprite {
+
+	i := -1
+
+	for k, v := range l.sprites {
+		if element == v {
+			i = k
+		}
+	}
+
+	if i == -1 {
+		return nil
+	}
+
+	l.sprites = append(l.sprites[:i], l.sprites[i+1:]...)
+
+	return element
+
+}

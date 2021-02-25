@@ -8,11 +8,17 @@ import (
 )
 
 //Behaviour Main interface for behaviours
+//***********************************************************
+//*				Behaviour Interface
+//***********************************************************
 type Behaviour interface {
 	Apply(dt float64)
 }
 
 //BehaviourCustom Allows us to crate custom behaviours
+//***********************************************************
+//*				Custom Behaviour
+//***********************************************************
 type BehaviourCustom struct {
 	Behaviour
 	Sprite  *Sprite
@@ -26,6 +32,9 @@ func (b *BehaviourCustom) Apply(dt float64) {
 }
 
 //Behaviour8Direction Movement behaviour with default WASD
+//***********************************************************
+//*				8Direction Behaviour
+//***********************************************************
 type Behaviour8Direction struct {
 	Behaviour
 	MaxSpeed     float64 //Maximum speed in p/s
@@ -101,6 +110,9 @@ func (b *Behaviour8Direction) Apply(dt float64) {
 }
 
 //BehaviourBoundToLayout Keeps stuff from running offscreen
+//***********************************************************
+//*				BoundToLayout Behaviour
+//***********************************************************
 type BehaviourBoundToLayout struct {
 	Behaviour
 	Sprite  *Sprite
@@ -130,6 +142,9 @@ func (b *BehaviourBoundToLayout) Apply(dt float64) {
 }
 
 //BehaviourAnimation VERY basic animation behaviour. Loops the frames from back to front
+//***********************************************************
+//*				Animation Behaviour
+//***********************************************************
 type BehaviourAnimation struct {
 	Behaviour
 	Sprite           *Sprite
@@ -145,7 +160,7 @@ type BehaviourAnimation struct {
 func (b *BehaviourAnimation) Apply(dt float64) {
 	b.accumelator += dt
 	if b.accumelator > b.FrameTime {
-		b.accumelator -= b.FrameTime
+		b.accumelator = 0
 		b.currentFrame++
 
 		if len(b.AnimationSet) > 0 && len(b.CurrentAnimation) > 0 {
@@ -164,6 +179,9 @@ func (b *BehaviourAnimation) Apply(dt float64) {
 }
 
 //BehaviourAnchor Anchors one sprite to another
+//***********************************************************
+//*				Anchor Behaviour
+//***********************************************************
 type BehaviourAnchor struct {
 	Behaviour
 	Sprite       *Sprite
@@ -179,6 +197,9 @@ func (b *BehaviourAnchor) Apply(dt float64) {
 }
 
 //BehaviourBullet Moves sprite in a set direction
+//***********************************************************
+//*				Bullet Behaviour
+//***********************************************************
 type BehaviourBullet struct {
 	Behaviour
 	Speed     float64
@@ -197,4 +218,71 @@ func (b *BehaviourBullet) Apply(dt float64) {
 	b.Sprite.Position.Y += b.Velocity.Y * dt
 	b.Sprite.Position.X += b.Velocity.X * dt
 
+}
+
+//BehaviourTurret simple turret behaviour
+//***********************************************************
+//*				Turret Behaviour
+//***********************************************************
+type BehaviourTurret struct {
+	Behaviour
+	Sprite        *Sprite
+	Enabled       bool
+	Rotation      float64
+	accumelator   float64
+	Range         float64
+	FireInterval  float64
+	FireHandler   func(b *BehaviourTurret)
+	CurrentTarget *Sprite
+	TargetGroups  []string
+}
+
+//Apply simple turret behaviour
+func (b *BehaviourTurret) Apply(dt float64) {
+	b.accumelator += dt
+
+	if b.accumelator > b.FireInterval {
+		b.accumelator -= b.FireInterval
+		if b.FireHandler != nil {
+			b.FireHandler(b)
+		}
+	}
+}
+
+//BehaviourDestroyOutsideOfLayout Keeps stuff from running offscreen
+//***********************************************************
+//*				DestroyOutsideOfLayout Behaviour
+//***********************************************************
+type BehaviourDestroyOutsideOfLayout struct {
+	Behaviour
+	Sprite  *Sprite
+	Enabled bool
+	Margin  float64
+}
+
+//Apply Keeps stuff from running offscreen
+func (b *BehaviourDestroyOutsideOfLayout) Apply(dt float64) {
+	w := b.Sprite.Layer.Scene.Game.Window
+
+	shouldDestroy := false
+
+	if b.Sprite.Position.Y > (w.Bounds().H() - b.Margin) {
+		shouldDestroy = true
+	}
+
+	if b.Sprite.Position.X > (w.Bounds().W() - b.Margin) {
+		shouldDestroy = true
+	}
+
+	if b.Sprite.Position.Y < b.Margin {
+		shouldDestroy = true
+	}
+
+	if b.Sprite.Position.X < b.Margin {
+		shouldDestroy = true
+	}
+
+	if shouldDestroy {
+		b.Sprite.Destroy()
+	}
 }
